@@ -21,3 +21,4 @@ dependencies:
        - wikipedia2vec==1.0.5
        - qutip==4.6.2
        - itables
+       - pylatexenc
