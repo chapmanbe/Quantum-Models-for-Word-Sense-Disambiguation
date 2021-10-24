@@ -5,7 +5,7 @@ Implements the free biclosed monoidal category.
 """
 
 from . import messages, monoidal, rigid
-from .cat import AxiomError
+from . cat import AxiomError
 
 
 class Ty(monoidal.Ty):

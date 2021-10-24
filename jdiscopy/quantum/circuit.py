@@ -19,6 +19,15 @@ from .. import messages, monoidal, rigid, tensor
 from .. cat import AxiomError
 from .. rigid import Ob, Ty, Diagram
 from .. tensor import np, Dim, Tensor
+from . gates import Bits, Ket
+from .. import cqmap
+from . gates import Bits, scalar, ClassicalGate
+from . gates import Bra, Ket
+from . tk import to_tk
+from . tk import from_tk
+from . gates import H, CX, Rx, Rz, Parametrized
+from . gates import H, Rx, Rz, CRz
+from . gates import CX, H, sqrt, Bra, Match
 
 
 def index2bitstring(i, length):
@@ -104,7 +113,7 @@ class Circuit(Diagram):
 
     def init_and_discard(self):
         """ Returns a circuit with empty domain and only bits as codomain. """
-        from discopy.quantum.gates import Bits, Ket
+        
         circuit = self
         if circuit.dom:
             init = Id(0).tensor(*(
@@ -170,8 +179,6 @@ class Circuit(Diagram):
         >>> assert circuit.eval(backend, n_shots=2**10).round()\\
         ...     == Tensor(dom=Dim(1), cod=Dim(2), array=[0., 1.])
         """
-        from discopy import cqmap
-        from discopy.quantum.gates import Bits, scalar, ClassicalGate
         if len(others) == 1 and not isinstance(others[0], Circuit):
             # This allows the syntax :code:`circuit.eval(backend)`
             return self.eval(backend=others[0], mixed=mixed, **params)
@@ -278,7 +285,7 @@ class Circuit(Diagram):
         -------
         array : numpy.ndarray
         """
-        from discopy.quantum.gates import Bra, Ket
+        
         if mixed or self.is_mixed:
             return self.init_and_discard().eval(mixed=True).array.real
         state = (Ket(*(len(self.dom) * [0])) >> self).eval()
@@ -331,7 +338,7 @@ class Circuit(Diagram):
         tk.Circuit(2, 1).H(0).X(1).CX(0, 1).Measure(1, 0).post_select({0: 0})
         """
         # pylint: disable=import-outside-toplevel
-        from discopy.quantum.tk import to_tk
+        
         return to_tk(self)
 
     @staticmethod
@@ -396,7 +403,7 @@ class Circuit(Diagram):
           >> scalar(2)
         """
         # pylint: disable=import-outside-toplevel
-        from discopy.quantum.tk import from_tk
+        
         if not tk_circuits:
             return Sum([], qubit ** 0, qubit ** 0)
         if len(tk_circuits) == 1:
@@ -448,7 +455,7 @@ class Circuit(Diagram):
 
     @staticmethod
     def cups(left, right):
-        from discopy.quantum.gates import CX, H, sqrt, Bra, Match
+        
 
         def cup_factory(left, right):
             if left == right == qubit:
@@ -715,7 +722,7 @@ class IQPansatz(Circuit):
     Rx(0.3) >> Rz(0.8) >> Rx(0.4)
     """
     def __init__(self, n_qubits, params):
-        from discopy.quantum.gates import H, Rx, Rz, CRz
+        
 
         def layer(thetas):
             hadamards = Id(0).tensor(*(n_qubits * [H]))
@@ -751,7 +758,7 @@ def random_tiling(n_qubits, depth=3, gateset=None, seed=None):
     >>> print(random_tiling(2, 1, gateset=[Rz, Rx], seed=420))
     Rz(0.673) @ Id(1) >> Id(1) @ Rx(0.273)
     """
-    from discopy.quantum.gates import H, CX, Rx, Rz, Parametrized
+    
     gateset = gateset or [H, Rx, CX]
     if seed is not None:
         random.seed(seed)
